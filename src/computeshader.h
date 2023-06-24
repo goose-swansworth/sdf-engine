@@ -1,0 +1,81 @@
+
+
+#ifndef COMPUTESHADER_H
+#define COMPUTESHADER_H
+
+#include "glad.h"
+
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
+class ComputeShader {
+    public:
+        unsigned int ID;
+
+        ComputeShader(const char* computePath) {
+            std::ifstream computeFile;
+            std::string computeCode_s;
+            computeFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+            try {
+                //open shader file
+                computeFile.open(computePath);
+                std::stringstream computeStream;
+                // read file's buffer contents into stream
+                computeStream << computeFile.rdbuf();
+                //close shader file
+                computeFile.close();
+                //conver stream into string
+                computeCode_s = computeStream.str();
+            } catch (std::ifstream::failure e) {
+                std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+            }
+            unsigned int compute;
+            const char* computeCode = computeCode_s.c_str();
+            // compute shader
+            compute = glCreateShader(GL_COMPUTE_SHADER);
+            glShaderSource(compute, 1, &computeCode, NULL);
+            glCompileShader(compute);
+            checkCompileErrors(compute, "COMPUTE");
+
+            // shader Program
+            ID = glCreateProgram();
+            glAttachShader(ID, compute);
+            glLinkProgram(ID);
+            checkCompileErrors(ID, "PROGRAM");
+
+            glDeleteShader(compute);
+        }
+
+        void use() {
+            glUseProgram(ID);
+        }
+    private:
+    // utility function for checking shader compilation/linking errors.
+    void checkCompileErrors(unsigned int shader, std::string type)
+    {
+        int success;
+        char infoLog[1024];
+        if (type != "PROGRAM")
+        {
+            glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+            if (!success)
+            {
+                glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+                std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            }
+        }
+        else
+        {
+            glGetProgramiv(shader, GL_LINK_STATUS, &success);
+            if (!success)
+            {
+                glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+                std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            }
+        }
+    }
+};
+#endif
+
