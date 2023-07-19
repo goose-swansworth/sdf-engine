@@ -51,6 +51,28 @@ class ComputeShader {
         void use() {
             glUseProgram(ID);
         }
+        // utility uniform functions
+        // ------------------------------------------------------------------------
+        void setBool(const std::string &name, bool value) const
+        {         
+            glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value); 
+        }
+        // ------------------------------------------------------------------------
+        void setInt(const std::string &name, int value) const
+        { 
+            glUniform1i(glGetUniformLocation(ID, name.c_str()), value); 
+        }
+        // ------------------------------------------------------------------------
+        void setFloat(const std::string &name, float value) const
+        { 
+            glUniform1f(glGetUniformLocation(ID, name.c_str()), value); 
+        }
+        void setVec3(const std::string &name, float vec[]) {
+            glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, vec);
+        }
+        void setVec4(const std::string &name, float vec[]) {
+            glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, vec);
+        }
     private:
     // utility function for checking shader compilation/linking errors.
     void checkCompileErrors(unsigned int shader, std::string type)
