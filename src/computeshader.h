@@ -5,6 +5,8 @@
 
 #include "glad.h"
 
+#include "vera/fs.h"
+
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -16,21 +18,22 @@ class ComputeShader {
 
         ComputeShader(const char* computePath) {
             std::ifstream computeFile;
-            std::string computeCode_s;
-            computeFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-            try {
-                //open shader file
-                computeFile.open(computePath);
-                std::stringstream computeStream;
-                // read file's buffer contents into stream
-                computeStream << computeFile.rdbuf();
-                //close shader file
-                computeFile.close();
-                //conver stream into string
-                computeCode_s = computeStream.str();
-            } catch (std::ifstream::failure e) {
-                std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
-            }
+            std::string computeCode_s = vera::loadGlslFrom("../src/shaders/compute/computeshader.glsl");
+            std::cout << "shader:" << computeCode_s << std::endl;
+            // computeFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+            // try {
+            //     //open shader file
+            //     computeFile.open(computePath);
+            //     std::stringstream computeStream;
+            //     // read file's buffer contents into stream
+            //     computeStream << computeFile.rdbuf();
+            //     //close shader file
+            //     computeFile.close();
+            //     //conver stream into string
+            //     computeCode_s = computeStream.str();
+            // } catch (std::ifstream::failure e) {
+            //     std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+            // }
             unsigned int compute;
             const char* computeCode = computeCode_s.c_str();
             // compute shader

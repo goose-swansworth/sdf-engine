@@ -1,5 +1,5 @@
 #include "glad.h"
-#include <GLFW/glfw3.h>
+#include "glfw/include/GLFW/glfw3.h"
 #include <glm/glm.hpp>
 
 #include <string>
@@ -143,8 +143,8 @@ int main() {
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     //load and complie shaders
-    ComputeShader cShader("../src/computeshader.glsl");
-    Shader vfShader("../src/quad.vert", "../src/quad.frag");
+    ComputeShader cShader("../src/shaders/computeshader.glsl");
+    Shader vfShader("../src/shaders/quad.vert", "../src/shaders/quad.frag");
 
     vfShader.use();
     vfShader.setInt("tex", 0);
