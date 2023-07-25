@@ -1,6 +1,8 @@
 #version 430 core
 
-#include "lighting.glsl"
+#include "lighting/lighting.glsl"
+#include "lygia/geometry/aabb.glsl"
+
 
 struct Camera {
     vec3 position;
@@ -90,6 +92,12 @@ vec2 txCoordsBox(int index, vec3 p) {
 
 }
 
+AABB boxToAABB(Box box) {
+    AABB aabb;
+    aabb.min = box.position - box.dims;
+    aabb.max = box.position + box.dims;
+    return aabb;
+}
 
 
 vec3 sdTranslate(vec3 trans, vec3 point) {
@@ -175,7 +183,22 @@ vec4 check(vec3 point) {
 
 
 vec2 trace(vec3 r0, vec3 d) {
-    vec2 res = marchScene(r0, d);
+    vec2 res =  vec2(-1, -1);//marchScene(r0, d);
+    float nearest = inf;
+    for (int i = 0; i < num_boxes; i++) {
+        vec2 box_int = intersect(boxToAABB(boxes[i]), r0, d);
+        if (box_int.x <= box_int.y) {
+            if (box_int.x < nearest) {
+                nearest = box_int.x;
+                res.y = i;
+            }
+        }
+    }
+
+    if (nearest < inf) {
+        res.x = nearest
+    }
+
     if (res.x < 0) {
         res.x = floor_intersection(r0, d);
         if (res.x > 0) {
